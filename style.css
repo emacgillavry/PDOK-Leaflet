@@ -7,4 +7,15 @@ html, body {
 #map {
   width: 100%;
   height: 100%;
+  background: url("http://www.webmapper.net/theme/img/mapbg.png") repeat scroll 0 0 #f9f9f9;
+}
+
+path {
+  fill-opacity: .7;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+path:hover {
+  fill-opacity: .9;
 }
