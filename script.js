@@ -21,3 +21,56 @@ var map = new L.Map('map', {
   center: new L.LatLng(53.219231,6.57537),
   zoom: 7
 });
+
+var svg = d3.select(map.getPanes().overlayPane).append("svg"),
+g = svg.append("g").attr("class", "leaflet-zoom-hide");
+    
+// Verdeel het domein van de waarden in 7 klassen en ken deze een kleur toe op basis van ColorBrewer
+var color = d3.scale.quantize().domain([0, 85]).range(colorbrewer.OrRd[7]);
+
+d3.json("groningen.json", function(collection) {
+    var bounds = d3.geo.bounds(collection),
+    path = d3.geo.path().projection(project);
+
+    var feature = g.selectAll("path")
+        .data(collection.features);
+        
+    feature
+        .enter()
+        .append("path")
+        .attr("fill", function(d) {
+             // geef iedere buurt de kleur die bij de klasse hoort
+             return color(d.properties.P_EENP_HH);
+        })            
+        .append("title");
+
+    feature
+        .select("title")
+        .text(function(d) {
+            // geef iedere buurt een titel met de buurtnaam en het percentage eenpersoonshuishoudens
+            return d.properties.BU_NAAM + ": " + d.properties.P_EENP_HH.toString() + "%";
+        });
+            
+    map.on("viewreset", reset);
+    reset();
+
+    function reset() {
+        var bottomLeft = project(bounds[0]),
+            topRight = project(bounds[1]);
+            svg
+                .attr("width", topRight[0] - bottomLeft[0])
+                .attr("height", bottomLeft[1] - topRight[1])
+                .style("margin-left", bottomLeft[0] + "px")
+                .style("margin-top", topRight[1] + "px");
+
+            g
+                .attr("transform", "translate(" + -bottomLeft[0] + "," + -topRight[1] + ")");
+            feature
+                .attr("d", path);
+        }
+
+    function project(x) {
+        var point = map.latLngToLayerPoint(new L.LatLng(x[1], x[0]));
+       return [point.x, point.y];
+    }
+});
