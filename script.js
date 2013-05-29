@@ -1,4 +1,7 @@
+// Resoluties (pixels per meter) van de zoomniveaus:
 var res = [3440.640, 1720.320, 860.160, 430.080, 215.040, 107.520, 53.760, 26.880, 13.440, 6.720, 3.360, 1.680, 0.840, 0.420];
+
+// Juiste projectieparameters voor Rijksdriehoekstelsel (EPSG:28992):
 var RD = L.CRS.proj4js('EPSG:28992', '+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +units=m +towgs84=565.2369,50.0087,465.658,-0.406857330322398,0.350732676542563,-1.8703473836068,4.0812 +no_defs', new L.Transformation(1, 285401.920, -1, 903401.920));
 RD.scale = function(zoom) {
     return 1 / res[zoom];
@@ -15,13 +18,59 @@ var map = new L.Map('map', {
         continuousWorld: true
     })
   ],
-  center: new L.LatLng(52, 5.3),
-  zoom: 3
+  center: new L.LatLng(53.219231,6.57537),
+  zoom: 7
 });
-// test RD coordinates
-map.on('click', function(e) {
-    if (window.console) {
-        var point = RD.projection.project(e.latlng);
-        console.log("RD X: " + point.x + ", Y: " + point.y);
+
+var svg = d3.select(map.getPanes().overlayPane).append("svg"),
+g = svg.append("g").attr("class", "leaflet-zoom-hide");
+    
+// Verdeel het domein van de waarden in 7 klassen en ken deze een kleur toe op basis van ColorBrewer
+var color = d3.scale.quantize().domain([0, 85]).range(colorbrewer.OrRd[7]);
+
+d3.json("groningen.json", function(collection) {
+    var bounds = d3.geo.bounds(collection),
+    path = d3.geo.path().projection(project);
+
+    var feature = g.selectAll("path")
+        .data(collection.features);
+        
+    feature
+        .enter()
+        .append("path")
+        .attr("fill", function(d) {
+             // geef iedere buurt de kleur die bij de klasse hoort
+             return color(d.properties.P_EENP_HH);
+        })            
+        .append("title");
+
+    feature
+        .select("title")
+        .text(function(d) {
+            // geef iedere buurt een titel met de buurtnaam en het percentage eenpersoonshuishoudens
+            return d.properties.BU_NAAM + ": " + d.properties.P_EENP_HH.toString() + "%";
+        });
+            
+    map.on("viewreset", reset);
+    reset();
+
+    function reset() {
+        var bottomLeft = project(bounds[0]),
+            topRight = project(bounds[1]);
+            svg
+                .attr("width", topRight[0] - bottomLeft[0])
+                .attr("height", bottomLeft[1] - topRight[1])
+                .style("margin-left", bottomLeft[0] + "px")
+                .style("margin-top", topRight[1] + "px");
+
+            g
+                .attr("transform", "translate(" + -bottomLeft[0] + "," + -topRight[1] + ")");
+            feature
+                .attr("d", path);
+        }
+
+    function project(x) {
+        var point = map.latLngToLayerPoint(new L.LatLng(x[1], x[0]));
+       return [point.x, point.y];
     }
 });

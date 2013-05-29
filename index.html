@@ -1,20 +1,37 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>PDOK and Leaflet</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta charset="utf-8" />
+    <title>BRT-Achtergrondkaart in Leaflet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
     <!--[if lte IE 8]>
-      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
     <![endif]-->
   </head>
   <body>
     <div id="map"></div>
-    <script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
+    <!--
+      Leaflet (http://www.leafletjs.com/) om interactieve kaarten in een website op te nemen
+    -->
+    <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
+    <!--
+      Proj4js (http://trac.osgeo.org/proj4js/) om meerdere projecties te ondersteunen
+    -->
     <script src="lib/proj4js-compressed.js"></script>
+    <!--
+      Proj4jsLeaflet plugin (http://kartena.github.io/Proj4Leaflet/) om Proj4js met Leaflet te gebruiken
+    -->    
     <script src="lib/proj4leaflet.js"></script>
+    <!--
+      D3 (http://d3js.org/) om interactieve grafieken in een website op te nemen
+    -->
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <!--
+      ColorBrewer (http://colorbrewer2.org/js/) om mooie legenda's te gebruiken
+    -->
+    <script src="lib/colorbrewer.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
