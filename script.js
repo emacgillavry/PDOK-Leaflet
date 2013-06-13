@@ -28,7 +28,7 @@ g = svg.append("g").attr("class", "leaflet-zoom-hide");
 // Verdeel het domein van de waarden in 7 klassen en ken deze een kleur toe op basis van ColorBrewer
 var color = d3.scale.quantize().domain([0, 85]).range(colorbrewer.OrRd[7]);
 
-d3.json("groningen.json", function(collection) {
+d3.json("groningen.geojson", function(collection) {
     var bounds = d3.geo.bounds(collection),
     path = d3.geo.path().projection(project);
 
